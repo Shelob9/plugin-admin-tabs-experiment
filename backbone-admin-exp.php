@@ -37,7 +37,8 @@ class JP_BB_Tabs {
 		if ( 'toplevel_page_' . $this->slug == $hook  ) {
 			wp_enqueue_script( 'jp-bb-exp', plugin_dir_url( __FILE__ ) . '/assets/js/admin.js', [
 				'backbone',
-				'jquery'
+				'jquery',
+				'underscore'
 			] );
 		}
 	}
@@ -64,14 +65,17 @@ class JP_BB_Tabs {
 	 */
 	public function page(){
 		?>
-		<div class="wrap"><h2 class="nav-tab-wrapper">
+		<div class="wrap">
+			<h2 class="nav-tab-wrapper">
 				<a href="<?php echo esc_url( $this->tab_url( 1 ) ); ?>" class="nav-tab nav-tab-active">Tab 1</a>
 				<a href="<?php echo esc_url( $this->tab_url( 2 ) ); ?>" class="nav-tab">Tab 2</a>
 			</h2>
 			<div id="tab_container">
-				Content
-			</div></>
+			</div>
+		</div>
+		
 		<?php
+		$this->load_templates();
 	}
 
 	/**
@@ -85,6 +89,17 @@ class JP_BB_Tabs {
 		$location = sprintf( 'admin.php?page=%s#tab/%d', $this->slug, absint( $id ) );
 		return admin_url( $location );
 	}
+
+
+	/**
+	 * Output templates
+	 */
+	public function load_templates(  ){
+		include dirname( __FILE__ ) . '/templates/tab-1.html';
+		include dirname( __FILE__  ) . '/templates/tab-2.html';
+	}
+
+
 }
 
 
