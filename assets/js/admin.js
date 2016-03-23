@@ -4,20 +4,35 @@ jQuery( document ).ready(function() {
 
         var AppRouter = $.Router.extend({
             routes: {
-                "tab/:id": "loadTab"
+                "tab/:tab": "loadTab"
             }
         });
 
-        var tab1View = Backbone.View.extend({
+        //settings model
+        var Settings = Backbone.Model.extend({
+            defaults: {
+                postType: 'post',
+                postID: 1
+            },
+            initialize: function(){
+
+            }
+        });
+
+        //settings view
+        var settingsView = Backbone.View.extend({
             initialize: function(){
                 this.render();
             },
+
             render: function(){
 
                 //get HTML for template
-                var tmpl = jQuery( '#tmpl-tab-1' ).html();
+                var tmpl = jQuery( '#tmpl-settings' ).html();
                 // Compile the template using underscore
-                var template = _.template( tmpl, {} );
+                var model = new Settings();
+                var data = model.toJSON();
+                var template = _.template( tmpl, data );
                 // Load the compiled HTML into the Backbone "el"
                 this.$el.html( template );
             },
@@ -29,14 +44,15 @@ jQuery( document ).ready(function() {
             }
         });
 
-        var tab2View = Backbone.View.extend({
+        //info view
+        var infoView = Backbone.View.extend({
             initialize: function(){
                 this.render();
             },
             render: function(){
 
                 //get HTML for template
-                var tmpl = jQuery( '#tmpl-tab-2' ).html();
+                var tmpl = jQuery( '#tmpl-info' ).html();
                 // Compile the template using underscore
                 var template = _.template( tmpl , {} );
                 // Load the compiled HTML into the Backbone "el"
@@ -51,10 +67,11 @@ jQuery( document ).ready(function() {
 
         //callback when "loadTab" route happens
         app_router.on('route:loadTab', function (id) {
-            if( 2 == id ){
-                var tab_2_view = new tab2View({ el: jQuery("#tab_container") });
+            var view;
+            if( 'info' == id ){
+                view = new infoView({ el: jQuery("#tab_container") });
             }else{
-                var tab_1_view = new tab1View({ el: jQuery("#tab_container") });
+                view = new settingsView({ el: jQuery("#tab_container") });
             }
 
         });

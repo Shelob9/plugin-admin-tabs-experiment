@@ -67,26 +67,30 @@ class JP_BB_Tabs {
 		?>
 		<div class="wrap">
 			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo esc_url( $this->tab_url( 1 ) ); ?>" class="nav-tab nav-tab-active">Tab 1</a>
-				<a href="<?php echo esc_url( $this->tab_url( 2 ) ); ?>" class="nav-tab">Tab 2</a>
+				<a href="<?php echo esc_url( $this->tab_url( 'settings' ) ); ?>" class="nav-tab nav-tab-active">
+					<?php esc_html_e( 'Settings' ); ?>
+				</a>
+				<a href="<?php echo esc_url( $this->tab_url( 'info' ) ); ?>" class="nav-tab">
+					<?php esc_html_e( 'Information' ); ?>
+				</a>
 			</h2>
 			<div id="tab_container">
 			</div>
 		</div>
-		
+
 		<?php
 		$this->load_templates();
 	}
 
 	/**
-	 * Create a URL for a tab, by ID
+	 * Create a URL for a tab
 	 *
-	 * @param int $id
+	 * @param string $tab
 	 *
 	 * @return string
 	 */
-	public function tab_url( $id ){
-		$location = sprintf( 'admin.php?page=%s#tab/%d', $this->slug, absint( $id ) );
+	public function tab_url( $tab ){
+		$location = sprintf( 'admin.php?page=%s#tab/%s', $this->slug, sanitize_title( $tab ) );
 		return admin_url( $location );
 	}
 
@@ -95,8 +99,8 @@ class JP_BB_Tabs {
 	 * Output templates
 	 */
 	public function load_templates(  ){
-		include dirname( __FILE__ ) . '/templates/tab-1.html';
-		include dirname( __FILE__  ) . '/templates/tab-2.html';
+		include dirname( __FILE__ ) . '/templates/settings.html';
+		include dirname( __FILE__  ) . '/templates/info.html';
 	}
 
 
