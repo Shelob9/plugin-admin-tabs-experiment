@@ -8,44 +8,85 @@ jQuery( document ).ready(function() {
             }
         });
 
-        //settings model
-        var Settings = Backbone.Model.extend({
-            defaults: {
-                postType: 'post',
-                postID: 1
-            },
-            initialize: function(){
+        var sync = $.sync;
+        $.sync = function(method, model, options) {
+            options.cache = false;
+            options.beforeSend = function (xhr) {
+                xhr.setRequestHeader('X-WP-Nonce', JP_BB_VARS.nonce);
+            };
 
+
+            sync(method, model, options);
+        };
+
+
+
+        //settings model
+        var Settings = $.Model.extend({
+            defaults: {
+                postType: 'page',
+                postID: 5
+            },
+            url: JP_BB_VARS.root,
+            initialize: function(){
             }
         });
 
         //settings view
-        var settingsView = Backbone.View.extend({
+        var settingsView = $.View.extend({
             initialize: function(){
-                this.render();
+                //set model in view
+                this.model = new Settings();
+
+                //fetch model from API and render templatw
+                var view = this;
+                this.model.fetch({
+                    success: function() {
+                        view.render();
+                    }
+                });
+
             },
 
-            render: function(){
+            render: function() {
 
                 //get HTML for template
                 var tmpl = jQuery( '#tmpl-settings' ).html();
+
+                //prepare data for template
+                var data = {
+                    postType: this.model.get( 'postType' ),
+                    postID: parseInt(this.model.get( 'postID' ), 10 )
+                };
+
                 // Compile the template using underscore
-                var model = new Settings();
-                var data = model.toJSON();
-                var template = _.template( tmpl, data );
-                // Load the compiled HTML into the Backbone "el"
-                this.$el.html( template );
+                var template = _.template( tmpl , data );
+                jQuery( '#tab_container' ).html( template );
+
             },
             events: {
-                "click input[type=submit]": "save"
+                "click input[type=submit]": "save",
+                "change input[name='post-type']": "updatePostType",
+                "change input[name='post-id']": "updatePostID"
+            },
+            updatePostType : function( e ){
+                this.model.set( { postType: jQuery( "input[name='post-type']" ).val() });
+
+            },
+            updatePostID : function ( e ) {
+                this.model.set( { postID: jQuery( "input[name='post-id']" ).val() });
             },
             save: function(e){
                 e.preventDefault();
+                this.model.save( {
+                    postType: this.model.get( 'postType' ),
+                    postID: parseInt( this.model.get( 'postID' ), 10 )
+                });
             }
         });
 
         //info view
-        var infoView = Backbone.View.extend({
+        var infoView = $.View.extend({
             initialize: function(){
                 this.render();
             },
@@ -55,7 +96,7 @@ jQuery( document ).ready(function() {
                 var tmpl = jQuery( '#tmpl-info' ).html();
                 // Compile the template using underscore
                 var template = _.template( tmpl , {} );
-                // Load the compiled HTML into the Backbone "el"
+                // Load the compiled HTML into the $ "el"
                 this.$el.html( template );
             }
         });
@@ -79,7 +120,7 @@ jQuery( document ).ready(function() {
 
 
 
-        // Start Backbone history
+        // Start $ history
         $.history.start();
 
 
