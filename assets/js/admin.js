@@ -42,18 +42,38 @@ jQuery( document ).ready(function() {
         });
 
         //settings view
-        var settingsView = $.View.extend({
-            initialize: function(){
+        var settingsView = $.View.extend( {
+            initialize: function () {
                 //set model in view
                 this.model = new Settings();
 
                 //fetch model from API and render templatw
                 var view = this;
-                this.model.fetch({
-                    success: function() {
+
+                this.model.fetch( {
+                    success: function () {
                         view.render();
                     }
-                });
+                } );
+
+                //prevent leaving with unsaved changes on a previous tab
+                var hasChanges = false;
+                jQuery( window ).bind( 'beforeunload', function ( e ) {
+
+                    if ( hasChanges ) {
+                        var message = "You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?";
+                        e.returnValue = message; // Cross-browser compatibility (src: MDN)
+                        return message;
+                    }
+                } );
+
+                this.changed = function () {
+                    hasChanges = true;
+                    if ( null == document.getElementById( 'settings-tab-indicator' ) ) {
+                        jQuery( '#settings-tab' ).append( '<span id="settings-tab-indicator" class="dashicons dashicons-warning"></div>' );
+                    }
+
+                }
 
             },
 
@@ -65,7 +85,7 @@ jQuery( document ).ready(function() {
                 //prepare data for template
                 var data = {
                     postType: this.model.get( 'postType' ),
-                    postID: parseInt(this.model.get( 'postID' ), 10 )
+                    postID: parseInt( this.model.get( 'postID' ), 10 )
                 };
 
                 // Compile the template using underscore
@@ -79,18 +99,23 @@ jQuery( document ).ready(function() {
                 "change input[name='post-id']": "updatePostID"
             },
             updatePostType : function( e ){
+                this.changed();
                 this.model.set( { postType: jQuery( "input[name='post-type']" ).val() });
 
             },
             updatePostID : function ( e ) {
+                this.changed();
                 this.model.set( { postID: jQuery( "input[name='post-id']" ).val() });
             },
             save: function(e){
                 e.preventDefault();
-                this.model.save( {
+                this.hasChanges = false;
+                jQuery( '#settings-tab-indicator' ).remove();
+                var data = {
                     postType: this.model.get( 'postType' ),
                     postID: parseInt( this.model.get( 'postID' ), 10 )
-                });
+                };
+                this.model.save( data );
             }
         });
 
