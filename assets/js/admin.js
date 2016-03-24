@@ -4,9 +4,18 @@ jQuery( document ).ready(function() {
 
         var AppRouter = $.Router.extend({
             routes: {
-                "tab/:tab": "loadTab"
+                "tab/:tab": "loadTab",
+                '*path':  'defaultRoute'
             }
         });
+
+        //Switch nav active markup
+        var mark_active_tab = function( tab ){
+            jQuery( '.nav-tab' ).removeClass( 'nav-tab-active' );
+            var active = '#' + tab + '-tab';
+            jQuery( active ).addClass( 'nav-tab-active' );
+
+        };
 
         var sync = $.sync;
         $.sync = function(method, model, options) {
@@ -107,15 +116,24 @@ jQuery( document ).ready(function() {
         var app_router = new AppRouter;
 
         //callback when "loadTab" route happens
-        app_router.on('route:loadTab', function (id) {
+        app_router.on('route:loadTab', function (tab ) {
             var view;
-            if( 'info' == id ){
+            if( 'info' == tab ){
                 view = new infoView({ el: jQuery("#tab_container") });
             }else{
                 view = new settingsView({ el: jQuery("#tab_container") });
             }
 
+            mark_active_tab( tab );
+
         });
+
+        //handle default route
+        app_router.on('route:defaultRoute', function () {
+            mark_active_tab( 'settings' );
+            var view = new settingsView({ el: jQuery("#tab_container") });
+        });
+
 
 
 

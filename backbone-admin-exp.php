@@ -85,10 +85,10 @@ class JP_BB_Tabs {
 		?>
 		<div class="wrap">
 			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo esc_url( $this->tab_url( 'settings' ) ); ?>" class="nav-tab nav-tab-active">
+				<a href="<?php echo esc_url( $this->tab_url( 'settings' ) ); ?>" class="nav-tab nav-tab-active" id="summary-tab">
 					<?php esc_html_e( 'Settings' ); ?>
 				</a>
-				<a href="<?php echo esc_url( $this->tab_url( 'info' ) ); ?>" class="nav-tab">
+				<a href="<?php echo esc_url( $this->tab_url( 'info' ) ); ?>" class="nav-tab" id="info-tab">
 					<?php esc_html_e( 'Information' ); ?>
 				</a>
 			</h2>
